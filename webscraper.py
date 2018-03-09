@@ -13,19 +13,26 @@ tools = []
 methods = []
 
 # Dictionary of cooking tools
-tools_dict = {'pot', 'press', 'baster', 'bowl', 'bottle opener', 'can opener', 'knife', 'tray', 'sheet', 'pan', 'skillet', 
+tools_dict = {'pot', 'press', 'baster', 'bowl', 'bottle opener', 'can opener', 'knife', 'tray', 'sheet', 'pan', 'skillet',
 				'slicer', 'cheesecloth', 'cleaver', 'colander', 'cracker', 'cutting board', 'flour sifter', 'funnel', 'garlic press',
 				'ladle', 'cup', 'spoon', 'thermometer', 'grater', 'blender', 'masher', 'shears', 'scissors', 'rolling pin',
 				'scoop', 'spatula', 'tongs', 'whisk', 'fork', 'skewer', 'timer', 'processor', 'saucepan', 'griddle'}
 
 # Dictionary of cooking verbs with associated cooking tools.  Example: if I find the verb 'dice', I know that I need a knife.
 # NOTE: at the ends of the dictionary, we have cooking verbs with no associated tool
-cooking_verbs = {'boil' : 'pot', 'stir' : 'wooden spoon', 'chop': 'knife', 'drain': 'colander', 'grate':'grater', 'simmer': 'pot', 
-					'fry': 'pan', 'slice': 'knife', 'cut': 'knife', 'dice': 'knife', 'flip': 'spatula', 'roll': 'rolling pin', 'mince': 'knife', 
-					'mix': 'wooden spoon', 'sauté': 'pan', 'saute': 'pan', 'barbecue': 'grill', 'baste': 'baster', 'broil': 'broiler', 
+cooking_verbs = {'boil' : 'pot', 'stir' : 'wooden spoon', 'chop': 'knife', 'drain': 'colander', 'grate':'grater', 'simmer': 'pot',
+					'fry': 'pan', 'slice': 'knife', 'cut': 'knife', 'dice': 'knife', 'flip': 'spatula', 'roll': 'rolling pin', 'mince': 'knife',
+					'mix': 'wooden spoon', 'sauté': 'pan', 'saute': 'pan', 'barbecue': 'grill', 'baste': 'baster', 'broil': 'broiler',
 					'beat': 'electric mixer/whisk', 'grill': 'grill', 'peel': 'peeler', 'poach': 'pot', 'puree': 'food processor',
-					'purée': 'food processor', 'toast': 'toaster/oven', 'whip': 'electric mixer/whisk', 'roast': '', 'knead': '', 'marinate': '', 
+					'purée': 'food processor', 'toast': 'toaster/oven', 'whip': 'electric mixer/whisk', 'roast': '', 'knead': '', 'marinate': '',
 					'sift': '', 'steam': '', 'toss': '', 'bake': '', 'microwave': '', 'grease': ''}
+
+vegetarian = {'chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 'steak':'seitan', 'turkey':'tofu', 'ham':'tofu', 'bacon':'tofu'}
+
+
+
+
+
 
 # Dictionary of units of measurement
 units_measure = {'cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon', 'pound', 'pounds'}
@@ -38,17 +45,17 @@ ingredients_section = soup.find_all('span', attrs={'class': 'recipe-ingred_txt a
 directions_section = soup.find_all('span', attrs={'class': 'recipe-directions__list--item'})
 
 # Function to get the details of each ingredient (name, quantity, measurement). Feed it one line of the ingredients list with
-# ntlk tags. Deals with ingredients with multiple descriptors like 1 (14.5 ounce) package. Some ingredients only have a quantity, 
+# ntlk tags. Deals with ingredients with multiple descriptors like 1 (14.5 ounce) package. Some ingredients only have a quantity,
 # like '1 large onion'
 def ingredientParser(lineTokens):
 	quantity = ''
 	measurement = ''
 	ingredient = ''
-	inParen = False 
+	inParen = False
 	getMeasure = False
 	quantityFound = False
 
-	for word in lineTokens: 
+	for word in lineTokens:
 		if quantityFound:
 			ingredient += word[0] + ' '
 		else:
@@ -92,12 +99,18 @@ def findToolsMethods(lineTokens):
 
 
 # PRINT RESULTS
+transform = input("Type 0 for no transformation. Type 1 for Vegetarian ")
+
 print("INGREDIENTS")
 for ingredient in ingredients_section:
 	ingredients.append(ingredient.get_text())
 	tokens = nltk.word_tokenize(ingredient.get_text())
 	tagged = nltk.pos_tag(tokens)
 	name, quantity, measurement = ingredientParser(tagged)
+	if transform == "1":
+		for meat in vegetarian:
+			if meat in name:
+				name = vegetarian[meat]
 	print("")
 	print("Ingredient as listed on AllRecipes.com: " + ingredient.get_text())
 	print("Name: " + ''.join(name) + "     Quantity: " + ''.join(quantity) + "     Measurement: " + ''.join(measurement))
