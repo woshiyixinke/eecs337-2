@@ -44,9 +44,9 @@ vegan = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 's
 		'mayo': 'vegan mayo', 'honey': 'agave', 'milk': 'soy milk', 'pasta': 'vegan pasta', 'noodles': 'vegan noodles', 'cream': 'soy yogurt'}
 
 japanese_ingr = {'noodles': 'ramen', 'pasta': 'ramen', 'butter': 'teryaki sauce', 'potatoes': 'Ube purple potatoes', 'potato': 'Ube purple potato',
-				'salt': 'Shio salt'}
+				'salt': 'Shio salt', 'cheese': 'Sakura cheese', 'mushrooms': 'shiitake mushrooms', 'onion': 'green onion'}
 
-japanese_methods = {'fry': 'stir fry', 'saute': 'stir fry', 'sautee': 'stir fry', 'sautée': 'stir fry'}
+japanese_methods = {'fry': 'stir fry', 'saute': 'stir fry', 'sautee': 'stir fry'}
 
 japanese_tools = {'skillet': 'wok', 'pan': 'wok', 'pot': 'clay pot', 'wooden': 'bamboo'}
 
@@ -59,6 +59,7 @@ soup = BeautifulSoup(page, 'html.parser')
 # Use HTML tags to grab the sections we want. This assumes all AllRecipes.com pages use the same tags.
 ingredients_section = soup.find_all('span', attrs={'class': 'recipe-ingred_txt added'})
 directions_section = soup.find_all('span', attrs={'class': 'recipe-directions__list--item'})
+recipe_name = soup.find_all('h1', attrs={'class': 'recipe-summary__h1'})
 
 # Function to get the details of each ingredient (name, quantity, measurement). Feed it one line of the ingredients list with
 # ntlk tags. Deals with ingredients with multiple descriptors like 1 (14.5 ounce) package. Some ingredients only have a quantity,
@@ -275,34 +276,20 @@ ingre["ingredients"] = ingredients
 # print("METHODS")
 # print(methods)
 
+print('RECIPE: ' + recipe_name[0].text + '\n')
 
-# transform = input("Would you like to transform the recipe? \n0: No transformation, 1: Vegetarian, 2: Healthy\nType your answer:")
-# print("transformed recipe")
 
+# transform = input("Would you like to transform the recipe? \n0: No transformation, 1: Vegetarian, 2: Healthy, 3: Vegan, 4: Japanese\nType your answer:")
 transform = '4'
 
 if transform == '1':
-	for protein in vegetarian.keys():
-		for ingredient in ingre['ingredients']:
-			if protein in ingredient['name']:
-				ingredient['name'] = vegetarian[protein]
+	transform_ingredients(ingre, vegetarian)
 if transform == '2':
-	for unhealthy in healthy_ingr.keys():
-		for ingredient in ingre['ingredients']:
-			if unhealthy in ingredient['name']:
-				ingredient['name'] = healthy_ingr[unhealthy]
+	transform_ingredients(ingre, healthy_ingr)
 if transform == '3':
-	# for nonvegan in vegan.keys():
-	# 	for ingredient in ingre['ingredients']:
-	# 		if nonvegan in ingredient['name']:
-	# 			ingredient['name'] = vegan[nonvegan]
 	transform_ingredients(ingre, vegan)
 if transform == '4':
-	for nonjapanese in japanese_ingr.keys():
-		for ingredient in ingre['ingredients']:
-			if nonjapanese in ingredient['name']:
-				ingredient['name'] = japanese_ingr[nonjapanese]
-
+	transform_ingredients(ingre, japanese_ingr)
 
 
 
@@ -323,7 +310,6 @@ for i, instruction in enumerate(directions_section):
 	elif transform == '4':
 		new_directions = transform_directions(tokens, japanese_ingr, japanese_methods, japanese_tools)
 	else:
-		# print(instruction.get_text())
 		new_directions = instruction.get_text()
 	if(new_directions):
 		print("Step " + str(i+1) + ": " + new_directions)
