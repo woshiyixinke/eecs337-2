@@ -6,7 +6,7 @@ import nltk
 import re
 from measument import list_of_measurement, list_of_abbrev_mesurement, list_of_descriptors, list_of_preparations, stop_words
 
-quote_page = 'https://www.allrecipes.com/recipe/78299/boilermaker-tailgate-chili/'
+quote_page = 'https://www.allrecipes.com/recipe/12009/cajun-chicken-pasta/'
 
 ingredients = []
 quantities = []
@@ -35,7 +35,20 @@ vegetarian = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan
 healthy_ingr = {'butter':'olive oil', 'oil':'olive oil', 'bacon':'turkey bacon', 'ice cream':'frozen yogurt','flour':'whole wheat flour', 'sugar':'stevia',
 				'bread':'whole wheat bread', 'heavy cream':'milk', 'whole milk':'fat-free milk', 'ground beef':'ground turkey', 'egg':'egg whites',
 				'syrup':'honey'}
+
 healthy_methods = {'fry':'bake'}
+
+vegan = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 'steak':'seitan', 'turkey':'tofu', 'ham':'tofu', 'bacon':'tofu',
+		'chuck':'seitan', 'cheese': 'soy cheese', 'eggs': 'tofu scramble', 'chicken stock': 'vegetable stock', 'beef stock': 'vegetable stock', 
+		'butter': 'sunflower oil', 'yogurt': 'soy yogurt', 'yoghurt': 'soy yoghurt', 'sour cream': 'soy yogurt', 'mayonnaise': 'vegan mayo', 
+		'mayo': 'vegan mayo', 'honey': 'agave', 'milk': 'soy milk', 'pasta': 'vegan pasta', 'noodles': 'vegan noodles', 'cream': 'soy yogurt'}
+
+japanese_ingr = {'noodles': 'ramen', 'pasta': 'ramen', 'butter': 'teryaki sauce', 'potatoes': 'Ube purple potatoes', 'potato': 'Ube purple potato',
+				'salt': 'Shio salt'}
+
+japanese_methods = {'fry': 'stir fry', 'saute': 'stir fry', 'sautee': 'stir fry', 'sautée': 'stir fry'}
+
+japanese_tools = {'skillet': 'wok', 'pan': 'wok', 'pot': 'clay pot', 'wooden': 'bamboo'}
 
 # Dictionary of units of measurement
 #units_measure = {'cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon', 'pound', 'pounds'}
@@ -173,10 +186,62 @@ def findToolsMethods(lineTokens):
 				if key not in methods:
 					methods.append(key)
 
+def transform_directions(tokens, ingredients, methods=None, tools=None):
+	for i, word in enumerate(tokens):
+		 # replace ingredients
+		for original in ingredients.keys():
+			if original in word:
+				tokens[i] = ingredients[original]
+		# optional: replace methods
+		if(methods):
+			for original_m in methods.keys():
+				if original_m in word:
+					tokens[i] = methods[original_m]
+		# optional: replace tools
+		if(tools):
+			for original_t in tools.keys():
+				if original_t in word:
+					tokens[i] = tools[original_t]
+
+	# print
+	x = ' '.join(tokens)
+	x = x.replace(' ,', ',').replace(' .', '.').replace(' ;', ';')
+	return x
+
+def transform_ingredients(ingre_list, replacements):
+	for original in replacements:
+		for ingredient in ingre_list['ingredients']:
+			if original in ingredient['name']:
+				ingredient['name'] = replacements[original]
+
+def print_ingredients(ingre):
+	for ingredient in ingre['ingredients']:
+		readable_string = ingredient['quantity'] + " " + ingredient['measurement'] + " of " + ascii(ingredient['name']).replace('\'', '')
+		print(readable_string)
+
+
+def transform_tools(tools, new_tools): 
+	for i, tool in enumerate(tools):
+		if tool in new_tools:
+			tools[i] = new_tools[tool]
+
+def transform_methods(methods, new_methods): 
+	for i, method in enumerate(methods):
+		if method in new_methods:
+			methods[i] = new_methods[method]
+
+def print_tools(tools):
+	for tool in tools:
+		print("- " + tool.title())
+
+def print_methods(methods):
+	for method in methods:
+		print("- " + method.title())
+
 
 
 # PRINT RESULTS
-print("INGREDIENTS")
+# print("INGREDIENTS")
 for ingredient in ingredients_section:
 	#tokens = nltk.word_tokenize(ingredient.get_text())
 	#tagged = nltk.pos_tag(tokens)
@@ -188,31 +253,33 @@ for ingredient in ingredients_section:
 	#print("Ingredient as listed on AllRecipes.com: " + ingredient.get_text())
 	#print("Name: " + ''.join(name) + "     Quantity: " + ''.join(quantity) + "     Measurement: " + ''.join(measurement))
 
-print("Ingredient as listed on AllRecipes.com")
+# print("Ingredient as listed on AllRecipes.com")
 ingre = {}
 ingre["ingredients"] = ingredients
-print(ingre)
+# print(ascii(ingre))
 
-print("")
-print("DIRECTIONS")
-for instruction in directions_section:
-	directions.append(instruction.get_text())
-	tokens = nltk.word_tokenize(instruction.get_text())
-	tagged = nltk.pos_tag(tokens)
-	print("")
-	print(instruction.get_text())
-	findToolsMethods(tagged)
+# print("")
+# print("DIRECTIONS")
+# for instruction in directions_section:
+# 	directions.append(instruction.get_text())
+# 	tokens = nltk.word_tokenize(instruction.get_text())
+# 	tagged = nltk.pos_tag(tokens)
+# 	print("")
+# 	print(instruction.get_text())
+# 	findToolsMethods(tagged)
 
-print("")
-print("TOOLS")
-print(tools)
-print("")
-print("METHODS")
-print(methods)
+# print("")
+# print("TOOLS")
+# print(tools)
+# print("")
+# print("METHODS")
+# print(methods)
 
 
-transform = input("Would you like to transform the recipe? Type 0 for no transformation, 1 for Vegetarian, 2 for Healthy: ")
-print("transformed recipe")
+# transform = input("Would you like to transform the recipe? \n0: No transformation, 1: Vegetarian, 2: Healthy\nType your answer:")
+# print("transformed recipe")
+
+transform = '4'
 
 if transform == '1':
 	for protein in vegetarian.keys():
@@ -224,52 +291,54 @@ if transform == '2':
 		for ingredient in ingre['ingredients']:
 			if unhealthy in ingredient['name']:
 				ingredient['name'] = healthy_ingr[unhealthy]
+if transform == '3':
+	# for nonvegan in vegan.keys():
+	# 	for ingredient in ingre['ingredients']:
+	# 		if nonvegan in ingredient['name']:
+	# 			ingredient['name'] = vegan[nonvegan]
+	transform_ingredients(ingre, vegan)
+if transform == '4':
+	for nonjapanese in japanese_ingr.keys():
+		for ingredient in ingre['ingredients']:
+			if nonjapanese in ingredient['name']:
+				ingredient['name'] = japanese_ingr[nonjapanese]
 
-print("DIRECTIONS")
-for instruction in directions_section:
+
+
+
+print("\n\n***** INGREDIENTS *****\n")
+print_ingredients(ingre)
+
+print("\n\n***** DIRECTIONS *****\n")
+for i, instruction in enumerate(directions_section):
 	directions.append(instruction.get_text())
 	tokens = nltk.word_tokenize(instruction.get_text())
 	tagged = nltk.pos_tag(tokens)
-	print("")
 	if transform == '1':
-		for i, word in enumerate(tokens):
-			for protein in vegetarian.keys():
-				if protein in word:
-					tokens[i] = vegetarian[protein]
-		for word in tokens:
-			print(word, end=" ")
-		x = ' '.join(tokens)
-		x = x.replace(' ,',',').replace(' .','.')
-		print(x)
+		new_directions = transform_directions(tokens, vegetarian)
 	elif transform == '2':
-		for i, word in enumerate(tokens):
-			for unhealthy in healthy_ingr.keys():
-				if unhealthy in word:
-					tokens[i] = healthy_ingr[unhealthy]
-			for unhealthy_m in healthy_methods.keys():
-				if unhealthy_m in word:
-					tokens[i] = healthy_methods[unhealthy_m]
-		for word in tokens:
-			print(word, end=" ")
-		x = ' '.join(tokens)
-		x = x.replace(' ,',',').replace(' .','.')
-		print(x)
+		new_directions = transform_directions(tokens, healthy_ingr, healthy_methods)
+	elif transform == '3':
+		new_directions = transform_directions(tokens, vegan)
+	elif transform == '4':
+		new_directions = transform_directions(tokens, japanese_ingr, japanese_methods, japanese_tools)
 	else:
-		print(instruction.get_text())
+		# print(instruction.get_text())
+		new_directions = instruction.get_text()
+	if(new_directions):
+		print("Step " + str(i+1) + ": " + new_directions)
 	findToolsMethods(tagged)
 
-print("")
-print("TOOLS")
-print(tools)
-print("")
-print("METHODS")
+print("\n\n***** TOOLS *****\n")
+if transform == '4':
+	transform_tools(tools, japanese_tools)
+print_tools(tools)
+
+print("\n\n***** METHODS *****\n")
 if transform == '2':
-	for unhealthy in healthy_methods.keys():
-		for i, method in enumerate(methods):
-			if unhealthy in method:
-				methods[i] = healthy_methods[unhealthy]
-print(methods)
-print("")
+	transform_methods(methods, healthy_methods)
+if transform == '4':
+	transform_methods(methods, japanese_methods)
+print_methods(methods)
 
 
-print(ingre)
