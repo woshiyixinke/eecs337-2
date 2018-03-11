@@ -29,7 +29,8 @@ cooking_verbs = {'boil' : 'pot', 'stir' : 'wooden spoon', 'chop': 'knife', 'drai
 					'toast': 'toaster/oven', 'whip': 'electric mixer/whisk', 'roast': '', 'knead': '', 'marinate': '',
 					'sift': '', 'steam': '', 'toss': '', 'bake': '', 'microwave': ''} #removed grease
 
-vegetarian = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 'steak':'seitan', 'turkey':'tofu', 'ham':'tofu', 'bacon':'tofu'}
+vegetarian = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 'steak':'seitan', 'turkey':'tofu', 'ham':'tofu', 'bacon':'tofu',
+			  'chuck':'seitan'}
 
 healthy_ingr = {'butter':'olive oil', 'oil':'olive oil', 'bacon':'turkey bacon', 'ice cream':'frozen yogurt','flour':'whole wheat flour', 'sugar':'stevia',
 				'bread':'whole wheat bread', 'heavy cream':'milk', 'whole milk':'fat-free milk', 'ground beef':'ground turkey', 'egg':'egg whites',
@@ -224,6 +225,26 @@ if transform == '2':
 			if unhealthy in ingredient['name']:
 				ingredient['name'] = healthy_ingr[unhealthy]
 
+print("DIRECTIONS")
+for instruction in directions_section:
+	directions.append(instruction.get_text())
+	tokens = nltk.word_tokenize(instruction.get_text())
+	tagged = nltk.pos_tag(tokens)
+	print("")
+	if transform == '1':
+		for i, word in enumerate(tokens):
+			for protein in vegetarian.keys():
+				if protein in word:
+					tokens[i] = vegetarian[protein]
+		for word in tokens:
+			print(word, end=" ")
+		x = ' '.join(tokens)
+		x = x.replace(' ,',',').replace(' .','.')
+		print(x)
+	else:
+		print(instruction.get_text())
+	findToolsMethods(tagged)
+
 print("")
 print("TOOLS")
 print(tools)
@@ -235,7 +256,7 @@ if transform == '2':
 			if unhealthy in method:
 				methods[i] = healthy_methods[unhealthy]
 print(methods)
-
+print("")
 
 
 print(ingre)
