@@ -241,6 +241,19 @@ for instruction in directions_section:
 		x = ' '.join(tokens)
 		x = x.replace(' ,',',').replace(' .','.')
 		print(x)
+	elif transform == '2':
+		for i, word in enumerate(tokens):
+			for unhealthy in healthy_ingr.keys():
+				if unhealthy in word:
+					tokens[i] = healthy_ingr[unhealthy]
+			for unhealthy_m in healthy_methods.keys():
+				if unhealthy_m in word:
+					tokens[i] = healthy_methods[unhealthy_m]
+		for word in tokens:
+			print(word, end=" ")
+		x = ' '.join(tokens)
+		x = x.replace(' ,',',').replace(' .','.')
+		print(x)
 	else:
 		print(instruction.get_text())
 	findToolsMethods(tagged)
