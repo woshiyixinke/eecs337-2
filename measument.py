@@ -17,7 +17,7 @@ list_of_measurement = ['cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon
                           ]
 
 list_of_descriptors = ['bone-in','fresh','dried','extra-virgin','ground','whole wheat','whole grain','low sodium','skinless','fat-free','boneless','low-fat','nonfat',
-                       'smooth','frozen','plain','Italian-style','Italian','all-purpose','dry','condensed','sour','white','cold','bulk','with juice','drained']
+                       'smooth','frozen','plain','Italian-style','Italian','all-purpose','dry','condensed','sour','white','cold','bulk','with juice','drained','heavy']
 
 list_of_preparations = ['cooking','cooked','cook','baked','baking','bake','slicing','slice','sliced','diced','minced','mincing','mince','basted','baste','basting','beated','beating','beat',
                        'bind','bound','bingding','blanching','blanched','blanch','blend','blent','blending','boiling','boil','boned','bone','braised',
@@ -25,7 +25,7 @@ list_of_preparations = ['cooking','cooked','cook','baked','baking','bake','slici
                        'caramelize','caramelized','chilling','chill','chilled','chop','chopping','chopped','clarified','clarifying','clarify','coating',
                        'coated','coat','peeling','peeled','peel','poach','poaching','poached','mix','mixed','mixing','shred','shredded','shreding','steamed','steam','steaming',
                        'toast','toasted','toasting','dipped','dipping','dip','discarrd','discarding','discarding','seeded','seed','seeding']
-stop_words = ['and','taste','needed','to',',','or','(',')','e.g','such','.','as']
+stop_words = ['and','taste','needed','to',',','or','(',')','e.g','such','.','as','into']
 
 
 cooking_verbs = {'boil' : 'pot', 'stir' : 'wooden spoon', 'chop': 'knife', 'drain': 'colander', 'grate':'grater', 'simmer': 'pot',
