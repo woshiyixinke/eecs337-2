@@ -2,3 +2,5 @@
 #Install BueautifulSoup if you haven’t already, also use python3
 #Install Tkinter as GUI which is compatible to Python 3 and works for Windows, Mac OS, Linux
 #Install 
+# https://www.activestate.com/activetcl/downloads.  Download and Install Tkinter
+
