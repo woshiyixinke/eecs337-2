@@ -4,57 +4,17 @@ import urllib.request
 from bs4 import BeautifulSoup
 import nltk
 import re
-from measument import list_of_measurement, list_of_abbrev_mesurement, list_of_descriptors, list_of_preparations, stop_words, cooking_verbs,tools_dict
-
-quote_page = 'https://www.allrecipes.com/recipe/12009/cajun-chicken-pasta/'
-
-ingredients = []
-quantities = []
-directions = []
-tools = []
-methods = []
-
-# Dictionary of cooking verbs with associated cooking tools.  Example: if I find the verb 'dice', I know that I need a knife.
-# NOTE: at the ends of the dictionary, we have cooking verbs with no associated tool
+from tkinter import *
+from measument import *
 
 
-vegetarian = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 'steak':'seitan', 'turkey':'tofu', 'ham':'tofu', 'bacon':'tofu',
-			  'chuck':'seitan'}
+#GUI Function
+def insert_url():
+	global quote_page 
+	quote_page = e.get()
 
-healthy_ingr = {'butter':'olive oil', 'oil':'olive oil', 'bacon':'turkey bacon', 'ice cream':'frozen yogurt','flour':'whole wheat flour', 'sugar':'stevia',
-				'bread':'whole wheat bread', 'heavy cream':'milk', 'whole milk':'fat-free milk', 'ground beef':'ground turkey', 'egg':'egg whites',
-				'syrup':'honey'}
+#quote_page = 'https://www.allrecipes.com/recipe/12009/cajun-chicken-pasta/'
 
-healthy_methods = {'fry':'bake'}
-
-vegan = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 'steak':'seitan', 'turkey':'tofu', 'ham':'tofu', 'bacon':'tofu',
-		'chuck':'seitan', 'cheese': 'soy cheese', 'eggs': 'tofu scramble', 'chicken stock': 'vegetable stock', 'beef stock': 'vegetable stock', 
-		'butter': 'sunflower oil', 'yogurt': 'soy yogurt', 'yoghurt': 'soy yoghurt', 'sour cream': 'soy yogurt', 'mayonnaise': 'vegan mayo', 
-		'mayo': 'vegan mayo', 'honey': 'agave', 'milk': 'soy milk', 'pasta': 'vegan pasta', 'noodles': 'vegan noodles', 'cream': 'soy yogurt'}
-
-japanese_ingr = {'noodles': 'ramen', 'pasta': 'ramen', 'butter': 'teryaki sauce', 'potatoes': 'Ube purple potatoes', 'potato': 'Ube purple potato',
-				'salt': 'Shio salt', 'cheese': 'Sakura cheese', 'mushrooms': 'shiitake mushrooms', 'onion': 'green onion'}
-
-japanese_methods = {'fry': 'stir fry', 'saute': 'stir fry', 'sautee': 'stir fry'}
-
-japanese_tools = {'skillet': 'wok', 'pan': 'wok', 'pot': 'clay pot', 'wooden': 'bamboo'}
-
-chinese_ingre = {}
-
-chinese_methods = {}
-
-chinese_tools = {}
-
-# Dictionary of units of measurement
-#units_measure = {'cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon', 'pound', 'pounds'}
-page = urllib.request.urlopen(quote_page)
-
-# Reads in HTML from AllRecipes.com
-soup = BeautifulSoup(page, 'html.parser')
-# Use HTML tags to grab the sections we want. This assumes all AllRecipes.com pages use the same tags.
-ingredients_section = soup.find_all('span', attrs={'class': 'recipe-ingred_txt added'})
-directions_section = soup.find_all('span', attrs={'class': 'recipe-directions__list--item'})
-recipe_name = soup.find_all('h1', attrs={'class': 'recipe-summary__h1'})
 
 # Function to get the details of each ingredient (name, quantity, measurement). Feed it one line of the ingredients list with
 # ntlk tags. Deals with ingredients with multiple descriptors like 1 (14.5 ounce) package. Some ingredients only have a quantity,
@@ -152,9 +112,9 @@ def findToolsMethods(lineTokens):
 			if key in tools_dict and key not in tools:
 				tools.append(key)
 
-			if key in cooking_verbs and cooking_verbs[key] not in tools:
-				if cooking_verbs[key] != '':
-					tools.append(cooking_verbs[key])
+			if key in cooking_verbs_2 and cooking_verbs_2[key] not in tools:
+				if cooking_verbs_2[key] != '':
+					tools.append(cooking_verbs_2[key])
 				if key not in methods:
 					methods.append(key)
 
@@ -211,47 +171,59 @@ def print_methods(methods):
 		print("- " + method.title())
 
 
+window = Tk()
+window.title('Team 5 Recipe')
+window.geometry('800x600')
 
-# PRINT RESULTS
-# print("INGREDIENTS")
+e = Entry(window, show = None)
+e.pack()
+
+b1 = Button(window, text = 'URL Request', width = 10, height = 2, command = insert_url)
+b1.pack()
+
+t = Text(window, width = 60, height = 4)
+t.pack()
+window.mainloop()
+
+
+# Dictionary of units of measurement
+#units_measure = {'cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon', 'pound', 'pounds'}
+page = urllib.request.urlopen(quote_page)
+
+# Reads in HTML from AllRecipes.com
+soup = BeautifulSoup(page, 'html.parser')
+# Use HTML tags to grab the sections we want. This assumes all AllRecipes.com pages use the same tags.
+ingredients_section = soup.find_all('span', attrs={'class': 'recipe-ingred_txt added'})
+directions_section = soup.find_all('span', attrs={'class': 'recipe-directions__list--item'})
+recipe_name = soup.find_all('h1', attrs={'class': 'recipe-summary__h1'})
+
+ingredients = []
+quantities = []
+directions = []
+tools = []
+methods = []
+
+
+# Dictionary of cooking verbs with associated cooking tools.  Example: if I find the verb 'dice', I know that I need a knife.
+# NOTE: at the ends of the dictionary, we have cooking verbs with no associated tool
+
 for ingredient in ingredients_section:
-	#tokens = nltk.word_tokenize(ingredient.get_text())
-	#tagged = nltk.pos_tag(tokens)
-	#print(ingredient.get_text())
+	
 	parsedIngredient = ingredientParser(ingredient.get_text())
 	ingredients.append(parsedIngredient)
-	#ingredients.append(ingredient.get_text())
-	#print("")
-	#print("Ingredient as listed on AllRecipes.com: " + ingredient.get_text())
-	#print("Name: " + ''.join(name) + "     Quantity: " + ''.join(quantity) + "     Measurement: " + ''.join(measurement))
+	
 
-# print("Ingredient as listed on AllRecipes.com")
+
 ingre = {}
 ingre["ingredients"] = ingredients
-# print(ascii(ingre))
 
-# print("")
-# print("DIRECTIONS")
-# for instruction in directions_section:
-# 	directions.append(instruction.get_text())
-# 	tokens = nltk.word_tokenize(instruction.get_text())
-# 	tagged = nltk.pos_tag(tokens)
-# 	print("")
-# 	print(instruction.get_text())
-# 	findToolsMethods(tagged)
 
-# print("")
-# print("TOOLS")
-# print(tools)
-# print("")
-# print("METHODS")
-# print(methods)
 
 print('RECIPE: ' + recipe_name[0].text + '\n')
 
 
 # transform = input("Would you like to transform the recipe? \n0: No transformation, 1: Vegetarian, 2: Healthy, 3: Vegan, 4: Japanese\nType your answer:")
-transform = '4'
+transform = '0'
 
 if transform == '1':
 	transform_ingredients(ingre, vegetarian)
@@ -298,4 +270,5 @@ if transform == '4':
 	transform_methods(methods, japanese_methods)
 print_methods(methods)
 
+# GUI for friendly showing out formatted transformation
 
