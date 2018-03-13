@@ -8,10 +8,26 @@ from tkinter import *
 from measument import *
 
 
+
+
+def getContentFromUrl(url):  
+    content = urllib.request.urlopen(url)  
+    content = BeautifulSoup(content, from_encoding='ascii')  
+    return content
+
 #GUI Function
-def insert_url():
+def insert_url(e, t):
 	global quote_page 
 	quote_page = e.get()
+	returned_var = request_from_url(quote_page)
+	#photo = PhotoImage(file = photo_src)
+	for ingrrr in returned_var["ingredients"]:
+		t.insert('end', "Ingredient: "+ingrrr["name"] + " (")
+		for ppp in ingrrr['preparations']:
+			t.insert('end', ppp+" ")
+		t.insert('end', ")\n" )
+		t.insert('end', "Measurement:"+ ingrrr["measurement"]+", Q:" + ingrrr["quantity"]+"\n")
+	#t.image_create('end',image = photo)
 
 #quote_page = 'https://www.allrecipes.com/recipe/12009/cajun-chicken-pasta/'
 
@@ -72,8 +88,22 @@ def ingredientParser(ingredient):
 						descriptors.append(token.lower())
 					delete_words.append(token.lower())
 			if token.lower() in list_of_preparations:
-				preparations.append(token.lower())
-				delete_words.append(token.lower())
+				indexStart = ingredient.index(token)
+				prepa = ingredient[indexStart:]
+				if ',' in prepa:	
+					prepas = prepa.split(',')
+					for p in prepas:
+						preparations.append(p.lower())
+						ts = nltk.word_tokenize(prepa)
+						for t in ts:
+							delete_words.append(t.lower())
+						
+				else:
+					preparations.append(prepa.lower())
+					ts = nltk.word_tokenize(prepa)
+					for t in ts:
+						#print("test:\000" + t)
+						delete_words.append(t.lower())
 
 	for token in tokens:
 		if token.lower() not in delete_words and token not in stop_words and token not in qty:
@@ -170,22 +200,125 @@ def print_methods(methods):
 	for method in methods:
 		print("- " + method.title())
 
+def request_from_url(url):
+	# Dictionary of units of measurement
+	#units_measure = {'cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon', 'pound', 'pounds'}
+	#global content
+	page = urllib.request.urlopen(quote_page)
 
-window = Tk()
-window.title('Team 5 Recipe')
-window.geometry('800x600')
+	# Reads in HTML from AllRecipes.com
+	soup = BeautifulSoup(page, 'html.parser')
+	# Use HTML tags to grab the sections we want. This assumes all AllRecipes.com pages use the same tags.
+	ingredients_section = soup.find_all('span', attrs={'class': 'recipe-ingred_txt added'})
+	directions_section = soup.find_all('span', attrs={'class': 'recipe-directions__list--item'})
+	recipe_name = soup.find_all('h1', attrs={'class': 'recipe-summary__h1'})
+	#photo_src = soup.find_all('img', attrs = {'class', 'rec-photo'})
+	#photo_src = photo_src[0].attrs['src'] 
+	#content = getContentFromUrl(photo_src)
+	#print(content)
+	#print(photos)
+	# Dictionary of cooking verbs with associated cooking tools.  Example: if I find the verb 'dice', I know that I need a knife.
+	# NOTE: at the ends of the dictionary, we have cooking verbs with no associated tool
 
-e = Entry(window, show = None)
-e.pack()
-
-b1 = Button(window, text = 'URL Request', width = 10, height = 2, command = insert_url)
-b1.pack()
-
-t = Text(window, width = 60, height = 4)
-t.pack()
-window.mainloop()
+	for ingredient in ingredients_section:
+		
+		parsedIngredient = ingredientParser(ingredient.get_text())
+		ingredients.append(parsedIngredient)
+		
 
 
+	ingre = {}
+	ingre["ingredients"] = ingredients
+
+
+
+	print('RECIPE: ' + recipe_name[0].text + '\n')
+
+
+	# transform = input("Would you like to transform the recipe? \n0: No transformation, 1: Vegetarian, 2: Healthy, 3: Vegan, 4: Japanese\nType your answer:")
+	transform = '0'
+
+	if transform == '1':
+		transform_ingredients(ingre, vegetarian)
+	if transform == '2':
+		transform_ingredients(ingre, healthy_ingr)
+	if transform == '3':
+		transform_ingredients(ingre, vegan)
+	if transform == '4':
+		transform_ingredients(ingre, japanese_ingr)
+
+
+
+	print("\n\n***** INGREDIENTS *****\n")
+	print_ingredients(ingre)
+
+	print("\n\n***** DIRECTIONS *****\n")
+	for i, instruction in enumerate(directions_section):
+		directions.append(instruction.get_text())
+		tokens = nltk.word_tokenize(instruction.get_text())
+		tagged = nltk.pos_tag(tokens)
+		if transform == '1':
+			new_directions = transform_directions(tokens, vegetarian)
+		elif transform == '2':
+			new_directions = transform_directions(tokens, healthy_ingr, healthy_methods)
+		elif transform == '3':
+			new_directions = transform_directions(tokens, vegan)
+		elif transform == '4':
+			new_directions = transform_directions(tokens, japanese_ingr, japanese_methods, japanese_tools)
+		else:
+			new_directions = instruction.get_text()
+		if(new_directions):
+			print("Step " + str(i+1) + ": " + new_directions)
+		findToolsMethods(tagged)
+
+	print("\n\n***** TOOLS *****\n")
+	if transform == '4':
+		transform_tools(tools, japanese_tools)
+	print_tools(tools)
+
+	print("\n\n***** METHODS *****\n")
+	if transform == '2':
+		transform_methods(methods, healthy_methods)
+	if transform == '4':
+		transform_methods(methods, japanese_methods)
+	print_methods(methods)
+	return ingre
+
+
+def main():
+
+	global ingredients
+	global quantities 
+	global directions 
+	global tools 
+	global methods 
+
+	ingredients = []
+	quantities = []
+	directions = []
+	tools = []
+	methods = []
+
+	window = Tk()
+	window.title('Team 5 Recipe')
+	window.geometry('800x600')
+
+	e = Entry(window, show = None)
+	e.pack()
+
+	b1 = Button(window, text = 'URL Request', width = 10, height = 2, command = lambda: insert_url(e,t))
+	b1.pack()
+
+	t = Text(window, width = 60, height = 16)
+	t.pack()
+	window.mainloop()
+
+
+if __name__ == '__main__':
+	main()
+
+
+'''
 # Dictionary of units of measurement
 #units_measure = {'cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon', 'pound', 'pounds'}
 page = urllib.request.urlopen(quote_page)
@@ -270,5 +403,5 @@ if transform == '4':
 	transform_methods(methods, japanese_methods)
 print_methods(methods)
 
-# GUI for friendly showing out formatted transformation
+'''
 
