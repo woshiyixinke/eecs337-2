@@ -29,16 +29,46 @@ stop_words = ['and','taste','needed','to',',','or','(',')','e.g','such','.','as'
 
 
 cooking_verbs = {'boil' : 'pot', 'stir' : 'wooden spoon', 'chop': 'knife', 'drain': 'colander', 'grate':'grater', 'simmer': 'pot',
-          'fry': 'pan', 'slice': 'knife', 'cut': 'knife', 'dice': 'knife', 'flip': 'spatula', 'roll': 'rolling pin', 'mince': 'knife',
+          'fry': 'pan', 'slice': 'knife', 'cut': 'knife', 'cutting':'knife','dice': 'knife', 'flip': 'spatula', 'roll': 'rolling pin', 'mince': 'knife',
           'mix': 'wooden spoon', 'saut': 'pan', 'saute': 'pan', 'barbecue': 'grill', 'baste': 'baster', 'broil': 'broiler',
           'beat': 'electric mixer/whisk', 'grill': 'grill', 'peel': 'peeler', 'poach': 'pot', 'puree': 'food processor',
           'toast': 'toaster/oven', 'whip': 'electric mixer/whisk', 'roast': '', 'knead': '', 'marinate': '',
           'sift': '', 'steam': '', 'toss': '', 'bake': '', 'microwave': ''}
 
+cooking_verbs_2 = {"cut": "knife", "cutting": "knife","chop": "knife","chopping": "knife","mince": "knife","minced": "knife","mincing": "knife","slice": "knife","sliced": "knife",
+  "slicing": "knife","dice": "knife","diced": "knife","dicing": "knife","cube": "knife","cubed": "knife","cubing": "knife","bake": "oven","baked": "oven","baking": "oven",
+  "microwave":"microwave","microwaved":"microwave","microwaving":"microwave","baste":"baster","basted":"baster","basting":"baster","grate":"grater","grated":"grater","grating":"grater",
+  "shred":"grater","shredding":"grater","shredded":"grater","measure":"measuring cups","measured":"measuring cups","measuring":"measuring cups","peel":"peeler","peeled":"peeler",
+  "peeling":"peeler","core":"paring knife","cored":"paring knife","pare":"paring knife","pared":"paring knife","paring":"paring knife","blend":"electric mixer",
+  "blended":"electric mixer","blending":"electric mixer","skewer": "barbecue fork","skewered": "barbecue fork","skewering": "barbecue fork",
+  "strain": "strainer","straining": "strainer","glaze": "pastry brush", "glazed": "pastry brush","glazing": "pastry brush","stir":"wooden spoon",
+  "stirred":"wooden spoon","stirring":"wooden spoon","beat": "whisk","beating": "whisk","spoon":"spoon"}
+
 
 tools_dict = {'pot', 'press', 'baster', 'bowl', 'bottle opener', 'can opener', 'knife', 'tray', 'sheet', 'pan', 'skillet',
         'slicer', 'cheesecloth', 'cleaver', 'colander', 'cracker', 'cutting board', 'flour sifter', 'funnel', 'garlic press',
         'ladle', 'cup', 'spoon', 'thermometer', 'grater', 'blender', 'masher', 'shears', 'scissors', 'rolling pin',
-        'scoop', 'spatula', 'tongs', 'whisk', 'fork', 'skewer', 'timer', 'processor', 'saucepan', 'griddle'}
+        'scoop', 'spatula', 'tongs', 'whisk', 'fork', 'skewer', 'timer', 'processor', 'saucepan', 'griddle','microwage'}
+
+vegetarian = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 'steak':'seitan', 'turkey':'tofu', 'ham':'tofu', 'bacon':'tofu',
+        'chuck':'seitan'}
+
+healthy_ingr = {'butter':'olive oil', 'oil':'olive oil', 'bacon':'turkey bacon', 'ice cream':'frozen yogurt','flour':'whole wheat flour', 'sugar':'stevia',
+        'bread':'whole wheat bread', 'heavy cream':'milk', 'whole milk':'fat-free milk', 'ground beef':'ground turkey', 'egg':'egg whites',
+        'syrup':'honey'}
+
+healthy_methods = {'fry':'bake'}
+
+vegan = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 'steak':'seitan', 'turkey':'tofu', 'ham':'tofu', 'bacon':'tofu',
+    'chuck':'seitan', 'cheese': 'soy cheese', 'eggs': 'tofu scramble', 'chicken stock': 'vegetable stock', 'beef stock': 'vegetable stock', 
+    'butter': 'sunflower oil', 'yogurt': 'soy yogurt', 'yoghurt': 'soy yoghurt', 'sour cream': 'soy yogurt', 'mayonnaise': 'vegan mayo', 
+    'mayo': 'vegan mayo', 'honey': 'agave', 'milk': 'soy milk', 'pasta': 'vegan pasta', 'noodles': 'vegan noodles', 'cream': 'soy yogurt'}
+
+japanese_ingr = {'noodles': 'ramen', 'pasta': 'ramen', 'butter': 'teryaki sauce', 'potatoes': 'Ube purple potatoes', 'potato': 'Ube purple potato',
+        'salt': 'Shio salt', 'cheese': 'Sakura cheese', 'mushrooms': 'shiitake mushrooms', 'onion': 'green onion'}
+
+japanese_methods = {'fry': 'stir fry', 'saute': 'stir fry', 'sautee': 'stir fry'}
+
+japanese_tools = {'skillet': 'wok', 'pan': 'wok', 'pot': 'clay pot', 'wooden': 'bamboo'}
 
     
