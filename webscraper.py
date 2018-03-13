@@ -4,7 +4,7 @@ import urllib.request
 from bs4 import BeautifulSoup
 import nltk
 import re
-from measument import list_of_measurement, list_of_abbrev_mesurement, list_of_descriptors, list_of_preparations, stop_words
+from measument import list_of_measurement, list_of_abbrev_mesurement, list_of_descriptors, list_of_preparations, stop_words, cooking_verbs,tools_dict
 
 quote_page = 'https://www.allrecipes.com/recipe/12009/cajun-chicken-pasta/'
 
@@ -14,20 +14,9 @@ directions = []
 tools = []
 methods = []
 
-# Dictionary of cooking tools
-tools_dict = {'pot', 'press', 'baster', 'bowl', 'bottle opener', 'can opener', 'knife', 'tray', 'sheet', 'pan', 'skillet',
-				'slicer', 'cheesecloth', 'cleaver', 'colander', 'cracker', 'cutting board', 'flour sifter', 'funnel', 'garlic press',
-				'ladle', 'cup', 'spoon', 'thermometer', 'grater', 'blender', 'masher', 'shears', 'scissors', 'rolling pin',
-				'scoop', 'spatula', 'tongs', 'whisk', 'fork', 'skewer', 'timer', 'processor', 'saucepan', 'griddle'}
-
 # Dictionary of cooking verbs with associated cooking tools.  Example: if I find the verb 'dice', I know that I need a knife.
 # NOTE: at the ends of the dictionary, we have cooking verbs with no associated tool
-cooking_verbs = {'boil' : 'pot', 'stir' : 'wooden spoon', 'chop': 'knife', 'drain': 'colander', 'grate':'grater', 'simmer': 'pot',
-					'fry': 'pan', 'slice': 'knife', 'cut': 'knife', 'dice': 'knife', 'flip': 'spatula', 'roll': 'rolling pin', 'mince': 'knife',
-					'mix': 'wooden spoon', 'saut': 'pan', 'saute': 'pan', 'barbecue': 'grill', 'baste': 'baster', 'broil': 'broiler',
-					'beat': 'electric mixer/whisk', 'grill': 'grill', 'peel': 'peeler', 'poach': 'pot', 'puree': 'food processor',
-					'toast': 'toaster/oven', 'whip': 'electric mixer/whisk', 'roast': '', 'knead': '', 'marinate': '',
-					'sift': '', 'steam': '', 'toss': '', 'bake': '', 'microwave': ''} #removed grease
+
 
 vegetarian = {'sausage':'tofu','chicken':'tofu', 'beef':'seitan', 'pork':'seitan', 'steak':'seitan', 'turkey':'tofu', 'ham':'tofu', 'bacon':'tofu',
 			  'chuck':'seitan'}
@@ -49,6 +38,12 @@ japanese_ingr = {'noodles': 'ramen', 'pasta': 'ramen', 'butter': 'teryaki sauce'
 japanese_methods = {'fry': 'stir fry', 'saute': 'stir fry', 'sautee': 'stir fry'}
 
 japanese_tools = {'skillet': 'wok', 'pan': 'wok', 'pot': 'clay pot', 'wooden': 'bamboo'}
+
+chinese_ingre = {}
+
+chinese_methods = {}
+
+chinese_tools = {}
 
 # Dictionary of units of measurement
 #units_measure = {'cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon', 'pound', 'pounds'}
@@ -145,31 +140,7 @@ def ingredientParser(ingredient):
 	result['preparations'] = preparations
 
 	return(result)
-	#print(names)
-#	for word in lineTokens:
-#		if quantityFound:
-#			ingredient += word[0] + ' '
-#		else:
-#			if inParen:
-#				if word[1] == ')':
-#					quantity = quantity[:-1]
-#					inParen = False
-#
 
-#				quantity += word[0] + ' '
-#			elif word[1] in {'CD', '('}:
-#				quantity += word[0] + ' '
-#				if word[1] == '(':
-#					inParen = True
-#					quantity = quantity[:-1]
-#			else:
-#				quantityFound = True
-#				if (word[0] in units_measure) or getMeasure:
-#					measurement = word[0]
-#				else:
-#					ingredient += word[0] + ' '
-
-#	return ingredient[:-1], quantity, measurement
 
 
 # Find cooking verbs (and associated tools) and cooking tools explicitly mentioned and add them to the methods dictionary and tools
