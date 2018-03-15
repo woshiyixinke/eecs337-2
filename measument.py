@@ -16,16 +16,16 @@ list_of_measurement = ['cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon
 	                        'dessertspoon','dessertspoons', 'can','cans', 'needed','dash','pinch','sprig','sprigs'
                           ]
 
-list_of_descriptors = ['bone-in','fresh','dried','extra-virgin','ground','whole wheat','whole grain','low sodium','skinless','fat-free','boneless','low-fat','nonfat',
-                       'smooth','frozen','plain','Italian-style','Italian','all-purpose','dry','condensed','sour','white','cold','bulk','with juice','drained','heavy']
+list_of_descriptors = ['with juice','bone-in','fresh','dried','extra-virgin','ground','whole wheat','whole grain','low sodium','skinless','fat-free','boneless','low-fat','nonfat',
+                       'smooth','frozen','plain','Italian-style','Italian','all-purpose','dry','condensed','sour','white','cold','bulk','with juice','drained','heavy','black','thick-cut']
 
-list_of_preparations = ['cooking','cooked','cook','baked','baking','bake','slicing','slice','sliced','diced','minced','mincing','mince','basted','baste','basting','beated','beating','beat',
+list_of_preparations = ['divided','cooking','cooked','cook','baked','baking','bake','slicing','slice','sliced','diced','minced','mincing','mince','basted','baste','basting','beated','beating','beat',
                        'bind','bound','bingding','blanching','blanched','blanch','blend','blent','blending','boiling','boil','boned','bone','braised',
                        'braising','braise','bread','broiled','broiling','broil','browning','brown','browned','brush','brushing','brushed','caramelizing',
                        'caramelize','caramelized','chilling','chill','chilled','chop','chopping','chopped','clarified','clarifying','clarify','coating',
                        'coated','coat','peeling','peeled','peel','poach','poaching','poached','mix','mixed','mixing','shred','shredded','shreding','steamed','steam','steaming',
                        'toast','toasted','toasting','dipped','dipping','dip','discarrd','discarding','discarding','seeded','seed','seeding']
-stop_words = ['and','taste','needed','to',',','or','(',')','e.g','such','.','as','into']
+stop_words = ['2','3','4','5','6','7','8','9','0','and','taste','needed','to',',','or','(',')','e.g','such','.','as']
 
 
 cooking_verbs = {'boil' : 'pot', 'stir' : 'wooden spoon', 'chop': 'knife', 'drain': 'colander', 'grate':'grater', 'simmer': 'pot',
@@ -70,5 +70,10 @@ japanese_ingr = {'noodles': 'ramen', 'pasta': 'ramen', 'butter': 'teryaki sauce'
 japanese_methods = {'fry': 'stir fry', 'saute': 'stir fry', 'sautee': 'stir fry'}
 
 japanese_tools = {'skillet': 'wok', 'pan': 'wok', 'pot': 'clay pot', 'wooden': 'bamboo'}
+
+chinese_ingr = {'noodles':'mein', 'cheese': 'pink pepper', 'cabbage':'bok choy','spaghetti':'rice noodles','hamburg':'white rice','linguine pasta':'lo mein',
+                'brown rice':'white rice','salmon':'grass carp', 'lobster':'crayfish','mushrooms':'chinese mushrooms','avocado':'sweet potato'}
+chinese_methods = {'fry': 'stir fry', 'saute': 'stir fry', 'sautee': 'stir fry','microwave':'steam', 'toast':'pan-fried'}
+chinese_tools = {'mircrowave': 'steamer','skillet': 'wok', 'pan': 'wok', 'pot': 'clay pot', 'wooden': 'bamboo'}
 
     
