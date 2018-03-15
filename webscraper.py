@@ -29,7 +29,7 @@ def showMethods(window, methods):
 		window.insert('end', "-"+method.title() + "\n")
 
 def showDirections(window, directions):
-	window.insert('end', "***** DIRECTIONS *****\n")
+	#window.insert('end', "***** DIRECTIONS *****\n")
 	i = 0
 	for direction in directions:
 		window.insert('end', "Step " + str(i+1) + ": " + direction + "\n\n")
@@ -74,6 +74,7 @@ def have_two_and_above_preparations(preparation):
 
 
 def ingredientParser(ingredient):
+	print(ingredient)
 	quantity = ''
 	measurement = []
 	#inParen = False
@@ -101,6 +102,7 @@ def ingredientParser(ingredient):
 	else:
 		quantity = qty[0]
 
+	
 	#if it has comma, we consider the second part as descriptor.
 	#words = ingredient.split(",")
 	tokens = nltk.word_tokenize(ingredient)
@@ -152,8 +154,9 @@ def ingredientParser(ingredient):
 
 
 	for token in tokens:
-		if token.lower() not in delete_words and token not in stop_words and token not in qty:
-			name.append(token)
+		if token.lower() not in delete_words and token not in stop_words:
+			if re.match("[0-9]*\.[0-9]+|[0-9]+\s[0-9/]+|[0-9/]+|[0-9]+", token) is None:
+					name.append(token.lower())
 	names = ''
 	for n in name:
 		names = names + ' ' + n
@@ -179,8 +182,9 @@ def ingredientParser(ingredient):
 					delete_words.append(token.lower())
 
 		for token in tokens:
-			if token.lower() not in delete_words and token not in stop_words and token not in qty:
-				name.append(token.lower())
+			if token.lower() not in delete_words and token not in stop_words:
+				if re.match("[0-9]*\.[0-9]+|[0-9]+\s[0-9/]+|[0-9/]+|[0-9]+", token) is None:
+					name.append(token.lower())
 		for n in name:
 			names = names + ' ' + n
 
@@ -273,8 +277,7 @@ def print_methods(methods):
 
 def request_from_url(quote_page):
 	# Dictionary of units of measurement
-	#units_measure = {'cup', 'cups', 'ounce', 'ounces', 'tablespoon', 'teaspoon', 'pound', 'pounds'}
-	#global content
+	
 	page = urllib.request.urlopen(quote_page)
 
 	# Reads in HTML from AllRecipes.com
@@ -284,6 +287,7 @@ def request_from_url(quote_page):
 	directions_section = soup.find_all('span', attrs={'class': 'recipe-directions__list--item'})
 	recipe_name = soup.find_all('h1', attrs={'class': 'recipe-summary__h1'})
 	photo_src = soup.find_all('img', attrs = {'class', 'rec-photo'})
+
 	photo_src = photo_src[0].attrs['src'] 
 	#print(photo_src)
 	i = 1
@@ -331,9 +335,10 @@ def request_from_url(quote_page):
 	print("\n\n***** DIRECTIONS *****\n")
 	neww = []
 	for i, instruction in enumerate(directions_section):
-		directions.append(instruction.get_text())
+		#directions.append(instruction.get_text())
 		tokens = nltk.word_tokenize(instruction.get_text())
 		tagged = nltk.pos_tag(tokens)
+		'''
 		if transform == '1':
 			new_directions = transform_directions(tokens, vegetarian)
 		elif transform == '2':
@@ -343,7 +348,8 @@ def request_from_url(quote_page):
 		elif transform == '4':
 			new_directions = transform_directions(tokens, japanese_ingr, japanese_methods, japanese_tools)
 		else:
-			new_directions = instruction.get_text()
+	    '''
+		new_directions = instruction.get_text()
 		if(new_directions):
 			print("Step " + str(i+1) + ": " + new_directions)
 			neww.append(new_directions)
@@ -362,6 +368,94 @@ def request_from_url(quote_page):
 	print_methods(methods)
 	return neww, tools, methods, ingre
 
+def doTransform(value, directions, tools, methods, ingre):
+	new_directions = []
+	# transform = input("Would you like to transform the recipe? \n0: No transformation, 1: Vegetarian, 2: Healthy, 3: Vegan, 4: Japanese, 5: Chinese
+	if value == "Vegetarian":
+		transform_ingredients(ingre, vegetarian)
+		for dir in directions:
+			tokens = nltk.word_tokenize(dir)
+			tagged = nltk.pos_tag(tokens)
+			new_direction = transform_directions(tokens, vegetarian)
+			new_directions.append(new_direction)
+
+		ingredientText.delete(0.0, 'end')
+		directionsText.delete(0.0, 'end')
+
+		directionsText.insert('end',"***** DIRECTIONS *****\n")
+		showDirections(directionsText, new_directions)
+		insert_url(ingredientText, ingre)
+	elif value == "Healthy":
+		transform_methods(methods, healthy_methods)
+
+		for dir in directions:
+			tokens = nltk.word_tokenize(dir)
+			tagged = nltk.pos_tag(tokens)
+			new_direction = transform_directions(tokens, healthy_ingr, healthy_methods)
+			new_directions.append(new_direction)
+		transform_ingredients(ingre, healthy_ingr)
+		ingredientText.delete(0.0, 'end')
+		methodsText.delete(0.0, 'end')
+		directionsText.delete(0.0, 'end')
+		directionsText.insert('end',"***** DIRECTIONS *****\n")
+		showDirections(directionsText, new_directions)
+		insert_url(ingredientText, ingre)
+		showMethods(methodsText, methods)
+
+	elif value == "Vegan":
+		new_directions = transform_directions(tokens, vegan)
+		for dir in directions:
+			tokens = nltk.word_tokenize(dir)
+			tagged = nltk.pos_tag(tokens)
+			new_direction = transform_directions(tokens, vegan)
+			new_directions.append(new_direction)
+
+		ingredientText.delete(0.0, 'end')
+		directionsText.delete(0.0, 'end')
+
+		directionsText.insert('end',"***** DIRECTIONS *****\n")
+		showDirections(directionsText, new_directions)
+		insert_url(ingredientText, ingre)
+	elif value == "Japanese":
+		transform_methods(methods, japanese_methods)
+		transform_tools(tools, japanese_tools)
+		transform_ingredients(ingre, japanese_ingr)
+		for dir in directions:
+			tokens = nltk.word_tokenize(dir)
+			tagged = nltk.pos_tag(tokens)
+			new_direction = transform_directions(tokens, japanese_ingr, japanese_methods, japanese_tools)
+			new_directions.append(new_direction)
+		
+		ingredientText.delete(0.0, 'end')
+		methodsText.delete(0.0, 'end')
+		toolsText.delete(0.0, 'end')
+		directionsText.delete(0.0, 'end')
+
+		showDirections(directionsText, new_directions)
+		insert_url(ingredientText, ingre)
+		showMethods(methodsText, methods)
+		showTools(toolsText, tools)
+	elif value == "Chinese":
+		transform_methods(methods, chinese_methods)
+		transform_tools(tools, chinese_tools)
+		transform_ingredients(ingre, chinese_ingr)
+		for dir in directions:
+			tokens = nltk.word_tokenize(dir)
+			tagged = nltk.pos_tag(tokens)
+			new_direction = transform_directions(tokens, chinese_ingr, chinese_methods, chinese_tools)
+			new_directions.append(new_direction)
+		
+		ingredientText.delete(0.0, 'end')
+		methodsText.delete(0.0, 'end')
+		toolsText.delete(0.0, 'end')
+		directionsText.delete(0.0, 'end')
+
+		showDirections(directionsText, new_directions)
+		insert_url(ingredientText, ingre)
+		showMethods(methodsText, methods)
+		showTools(toolsText, tools)
+	else:
+		return
 
 def main():
 
@@ -382,7 +476,7 @@ def main():
 	quote_page = 'https://www.allrecipes.com/recipe/12009/cajun-chicken-pasta/'
 	directions, tools, methods, ingre = request_from_url(quote_page)
 	im = PIL.Image.open(path)
-	#print(path)
+	
 	im.thumbnail((200,150))
 	
 	window = Tk()
@@ -391,6 +485,8 @@ def main():
 
 	window.geometry('800x600')
 
+	global methodsText
+	global toolsText
 	fm1 = Frame(window, width = 80, height = 12)
 	photo = PIL.ImageTk.PhotoImage(im)
 	l = Label(fm1, image = photo)
@@ -400,25 +496,26 @@ def main():
 	toolsText.pack(side = 'left')
 	fm2 = Frame(fm1, width = 40, height = 6)
 	comvalue = StringVar()
-	comboxlist = ttk.Combobox(fm2, textvariable= comvalue)
-	comboxlist["values"]=("Vegetarian","Healthy","Vegan","Japanese", "Chinese") 
+	comboxlist = ttk.Combobox(fm2, textvariable= comvalue, state = 'readonly')
+	comboxlist["values"]=("None","Vegetarian","Healthy","Vegan","Japanese", "Chinese") 
 	comboxlist.current(0)
 	comboxlist.pack(side = 'top')
 	methodsText = Text(fm1, width = 20, height = 7.5, bg = 'grey')
 	methodsText.pack(side = 'left')
-	b1 = Button(fm2, text = 'transform', width = 10, height = 2)
+	b1 = Button(fm2, text = 'transform', width = 10, height = 2, command = lambda: doTransform(comboxlist.get(), directions, tools, methods, ingre))
 	b1.pack(side = 'top')
 	fm2.pack(side = 'left')
 	fm1.pack(side = 'top')
 
-
-	#b1 = Button(window, text = 'URL Request', width = 10, height = 2, command = lambda: insert_url(e,t))
-	#b1.pack()
+	global ingredientText
+	global directionsText
 	ingredientText = Text(window, width = 120, height = 16, fg = 'black', bg = 'grey')
 	#t.place(x = 400, y = 100)
 	ingredientText.pack(side = 'top')
 	directionsText = Text(window, width = 120, height = 18, bg = 'grey')
 	directionsText.pack(side = 'top')
+	directionsText.insert('end',"***** DIRECTIONS *****\n")
+	#cook = ''
 	showDirections(directionsText, directions)
 	insert_url(ingredientText, ingre)
 	showTools(toolsText, tools)
